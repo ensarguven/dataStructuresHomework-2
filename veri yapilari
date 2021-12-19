@@ -1,0 +1,142 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+ 
+struct kuyruk {
+	int data; 
+	struct kuyruk *next; 
+};
+struct stack {               // 1 bağlı liste yapısına uygun ayarlayacağım ( aslında liste yapısı bu ) 
+	int data; 
+	struct stack *next; 
+};
+
+FILE *ptr ; 
+struct kuyruk *front; 
+struct kuyruk *rear; 
+struct stack *top ; 
+int toplam; 
+int ortalama; 
+int sayac; 
+int n; 
+
+void ilkDegerleriVer() 
+{
+	ptr= fopen("sayilar.txt", "r") ; 
+	front =NULL; 
+	rear= NULL; 
+	top = NULL;
+	toplam=0; 
+	ortalama= 0;  	
+	sayac= 0; 
+	n=0; 
+}
+
+void kuyrugaAktar() 
+{
+	FILE *ptr = fopen("sayilar.txt", "r") ; 
+	if( ptr!=NULL  ) 
+	{
+		char ch1; 
+		char ch2;
+		
+		printf("kuyruga eklenen sayilar \n") ; 
+		while( ( ch1=fgetc(ptr)    ) != EOF)  
+		{
+			int sayi =0; 
+			ch2= fgetc(ptr) ;
+			
+			if( ch1=='0') 
+			ch1='1' ; 
+			if(ch2==EOF ) 
+			ch2='0' ; 
+			
+			sayi = (int)  ( ch1-48 ) ;
+			sayi *= 10;  
+			sayi += (int)   ( ch2-48 )  ;  
+			
+			struct kuyruk * eleman = (struct kuyruk * )malloc(sizeof(struct kuyruk)) ; 
+			eleman->data = sayi;
+			eleman->next=NULL;  
+			if( front ==NULL  ) 
+			{
+				front =rear = eleman; 
+				printf("%d  ", rear->data ) ; 
+			}
+			else
+			{
+				rear->next = eleman;
+				rear = eleman;  
+				printf("%d  ", rear->data ) ;								
+			} 
+			
+			toplam+= sayi; 
+			sayac++;       // ortalamayı bulmak için bu sayacı kullanıyorum
+		}
+		 
+		
+	}
+	else
+	{
+		printf("sayilar.txt dosyasina ulasilamadi \n") ; 
+	}
+ 	
+ 	ortalama= toplam/sayac; 
+ 	printf("\nortalama : %d \n", ortalama) ; 
+ 	
+}
+
+void stackeAktar() 
+{
+		printf("\nstack yapisina uygun bagli liste yapisina aktarilan sayilar \n") ;  
+		struct kuyruk * temp= front ; 
+		
+		 while( temp!=NULL  ) 
+		 {
+			if( temp->data < ortalama )
+			{
+				struct stack * eleman = (struct stack * ) malloc(sizeof(struct stack )) ; 
+				eleman->data= temp->data;
+				eleman->next= NULL;  
+				if( top==NULL  ) 
+				{
+					top = eleman; 
+					printf("%d\n", top->data ) ; 					
+				}	
+				else
+				{
+					eleman->next= top; 
+					top = eleman; 
+					printf("%d\n", top->data ) ; 					
+				}
+				n++;  // dizi boyunu belirlemek için bu sayacı kullanıyorum 
+			} 	
+		 	temp= temp->next; 
+		} 
+	
+}
+
+void diziyeAktar() 
+{
+	int dizi[n] , i=0 ; 
+	struct stack *temp = top;
+	printf("\ndiziye aktarilan elemanlar \n\n") ;  
+	while( temp!=NULL )
+	{
+		dizi[i] = temp->data; 
+		printf("dizi[%d] = %d \n", i, dizi[i] ) ; 
+		temp = temp->next; 
+	}
+	
+}
+
+int main() 
+{
+	ilkDegerleriVer() ;
+	kuyrugaAktar() ;  
+	stackeAktar(); 
+	diziyeAktar() ; 
+	
+	return 0; 
+}
